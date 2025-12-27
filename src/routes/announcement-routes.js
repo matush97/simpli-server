@@ -4,12 +4,14 @@ const router = express.Router();
 const {
     createAnnouncement,
     listAnnouncements,
-    getAnnouncementById
+    getAnnouncement,
+    updateAnnouncement
 } = require('../controllers/announcement-controller');
 
 router.post('/create', createAnnouncement);
 router.get('/list', listAnnouncements);
-router.get('/get', getAnnouncementById);
+router.get('/get', getAnnouncement);
+router.patch('/update', updateAnnouncement);
 
 
 module.exports = router;

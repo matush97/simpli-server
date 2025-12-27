@@ -2,10 +2,10 @@ const AnnouncementModel = require('../models/announcement-model');
 
 // POST /api/announcement/create
 exports.createAnnouncement = async (req, res) => {
-    try {
-        const { title, content, category } = req.body;
-        const actualDate = new Date();
+    const { title, content, category } = req.body;
+    const actualDate = new Date();
 
+    try {
         const announcement = await AnnouncementModel.create({
             title,
             content,
@@ -22,18 +22,16 @@ exports.createAnnouncement = async (req, res) => {
 
 // GET /api/announcement/list
 exports.listAnnouncements = async (req, res) => {
-    let announcements;
     try {
-        announcements = await AnnouncementModel.find().sort({ publicationDate: -1 });
+        const announcements = await AnnouncementModel.find().sort({ publicationDate: -1 });
+        res.json(announcements);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error });
     }
-
-    res.json(announcements);
 };
 
 // GET /api/announcement/get/:id
-exports.getAnnouncementById = async (req, res) => {
+exports.getAnnouncement = async (req, res) => {
     let announcement;
     try {
         announcement = await AnnouncementModel.findById(req.body.id);
@@ -46,4 +44,37 @@ exports.getAnnouncementById = async (req, res) => {
     }
 
     res.json(announcement);
+};
+
+// UPDATE /api/announcement/update
+exports.updateAnnouncement = async (req, res) => {
+    let announcement;
+    try {
+        announcement = await AnnouncementModel.findById(req.body.id);
+    } catch (error) {
+        res.status(400).json({ message: 'Invalid ID', error: error });
+    }
+
+    if (!announcement) {
+        return res.status(404).json({ message: 'Announcement by ID does not exist' });
+    }
+
+    const updateObject = {
+      title: req.body.title ?? announcement.title,
+      content: req.body.content ?? announcement.content,
+      category: req.body.category ?? announcement.category,
+      publicationDate: req.body.publicationDate ?? announcement.publicationDate,
+      lastUpdate: new Date(),
+    }
+
+    try {
+        const updated = await AnnouncementModel.findByIdAndUpdate(
+            req.body.id,
+            updateObject
+        );
+
+        res.json(updated);
+    } catch (error) {
+        res.status(400).json({ message: 'Update failed', error: error });
+    }
 };
