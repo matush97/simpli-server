@@ -78,3 +78,24 @@ exports.updateAnnouncement = async (req, res) => {
         res.status(400).json({ message: 'Update failed', error: error });
     }
 };
+
+// DELETE /api/announcement/delete
+exports.deleteAnnouncement = async (req, res) => {
+    let announcement;
+    try {
+        announcement = await AnnouncementModel.findById(req.body.id);
+    } catch (error) {
+        res.status(400).json({ message: 'Invalid ID', error: error });
+    }
+
+    if (!announcement) {
+        return res.status(404).json({ message: 'Not found' });
+    }
+
+    try {
+        await AnnouncementModel.findByIdAndDelete(req.body.id);
+        res.json({ message: 'Deleted successfully' });
+    } catch (error) {
+        res.status(400).json({ message: 'Delete failed' });
+    }
+};

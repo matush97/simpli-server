@@ -5,13 +5,15 @@ const {
     createAnnouncement,
     listAnnouncements,
     getAnnouncement,
-    updateAnnouncement
+    updateAnnouncement,
+    deleteAnnouncement
 } = require('../controllers/announcement-controller');
 
 router.post('/create', createAnnouncement);
 router.get('/list', listAnnouncements);
 router.get('/get', getAnnouncement);
 router.patch('/update', updateAnnouncement);
+router.delete('/delete', deleteAnnouncement);
 
 
 module.exports = router;
