@@ -11,7 +11,7 @@ const {
 
 router.post('/create', createAnnouncement);
 router.get('/list', listAnnouncements);
-router.get('/get', getAnnouncement);
+router.get('/get/:id', getAnnouncement);
 router.patch('/update', updateAnnouncement);
 router.delete('/delete', deleteAnnouncement);
 
