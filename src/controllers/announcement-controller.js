@@ -37,8 +37,22 @@ exports.createAnnouncement = async (req, res) => {
 
 // GET /api/announcement/list
 exports.listAnnouncements = async (req, res) => {
+    const { category, search } = req.body;
+    const filter = {};
+
+    if (category) {
+        filter.category = { $all: category }
+    }
+
+    if (search) {
+        filter.$or = [
+            { title: { $regex: search, $options: 'i' } },
+            { content: { $regex: search, $options: 'i' } }
+        ];
+    }
+
     try {
-        const announcements = await AnnouncementModel.find().sort({ publicationDate: -1 });
+        const announcements = await AnnouncementModel.find(filter).sort({ publicationDate: -1 });
         res.json(announcements);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error });

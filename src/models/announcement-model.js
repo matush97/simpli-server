@@ -28,4 +28,6 @@ const announcementSchema = new mongoose.Schema(
     },
 );
 
+announcementSchema.index({title: "text", content: "text"});
+
 module.exports = mongoose.model('AnnouncementModel', announcementSchema);
