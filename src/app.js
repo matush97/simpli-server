@@ -6,6 +6,6 @@ const app = express();
 
 app.use(express.json());
 
-app.use('/api/announcements', announcementRoutes);
+app.use('/api/announcement', announcementRoutes);
 
 module.exports = app;
