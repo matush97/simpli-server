@@ -1,5 +1,20 @@
 const AnnouncementModel = require('../models/announcement-model');
 
+async function getAnnouncementObject(req, res) {
+    let announcement;
+    try {
+        announcement = await AnnouncementModel.findById(req.body.id);
+    } catch (error) {
+        res.status(400).json({ message: 'Invalid ID', error: error });
+    }
+
+    if (!announcement) {
+        return res.status(404).json({ message: 'Not found', id: req.body.id });
+    }
+
+    return announcement;
+}
+
 // POST /api/announcement/create
 exports.createAnnouncement = async (req, res) => {
     const { title, content, category } = req.body;
@@ -32,32 +47,14 @@ exports.listAnnouncements = async (req, res) => {
 
 // GET /api/announcement/get/:id
 exports.getAnnouncement = async (req, res) => {
-    let announcement;
-    try {
-        announcement = await AnnouncementModel.findById(req.body.id);
-    } catch (error) {
-        res.status(400).json({ message: 'Invalid ID', error: error });
-    }
-
-    if (!announcement) {
-        return res.status(404).json({ message: 'Not found' });
-    }
+    const announcement = await getAnnouncementObject(req, res);
 
     res.json(announcement);
 };
 
 // UPDATE /api/announcement/update
 exports.updateAnnouncement = async (req, res) => {
-    let announcement;
-    try {
-        announcement = await AnnouncementModel.findById(req.body.id);
-    } catch (error) {
-        res.status(400).json({ message: 'Invalid ID', error: error });
-    }
-
-    if (!announcement) {
-        return res.status(404).json({ message: 'Announcement by ID does not exist' });
-    }
+    const announcement = await getAnnouncementObject(req, res);
 
     const updateObject = {
       title: req.body.title ?? announcement.title,
@@ -70,7 +67,8 @@ exports.updateAnnouncement = async (req, res) => {
     try {
         const updated = await AnnouncementModel.findByIdAndUpdate(
             req.body.id,
-            updateObject
+            updateObject,
+            { new: true }
         );
 
         res.json(updated);
@@ -81,16 +79,7 @@ exports.updateAnnouncement = async (req, res) => {
 
 // DELETE /api/announcement/delete
 exports.deleteAnnouncement = async (req, res) => {
-    let announcement;
-    try {
-        announcement = await AnnouncementModel.findById(req.body.id);
-    } catch (error) {
-        res.status(400).json({ message: 'Invalid ID', error: error });
-    }
-
-    if (!announcement) {
-        return res.status(404).json({ message: 'Not found' });
-    }
+    await getAnnouncementObject(req, res);
 
     try {
         await AnnouncementModel.findByIdAndDelete(req.body.id);
