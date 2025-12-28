@@ -1,5 +1,6 @@
 const CategoryModel = require("../models/category-model");
 
+// POST /api/category/create
 exports.createCategory = async (req, res) => {
     const {itemList} = req.body;
 
@@ -11,6 +12,7 @@ exports.createCategory = async (req, res) => {
     }
 }
 
+// GET /api/category/list
 exports.listCategory = async (req, res) => {
     try {
         const categoryList = await CategoryModel.find();
