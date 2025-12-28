@@ -1,15 +1,15 @@
 const AnnouncementModel = require('../models/announcement-model');
 
-async function getAnnouncementObject(req, res) {
+async function getAnnouncementObject(id, res) {
     let announcement;
     try {
-        announcement = await AnnouncementModel.findById(req.params.id);
+        announcement = await AnnouncementModel.findById(id);
     } catch (error) {
         res.status(400).json({message: 'Invalid ID', error: error});
     }
 
     if (!announcement) {
-        return res.status(404).json({message: 'Not found', id: req.body.id});
+        return res.status(404).json({message: 'Not found', id: id});
     }
 
     return announcement;
@@ -52,7 +52,7 @@ exports.listAnnouncements = async (req, res) => {
     }
 
     try {
-        const announcements = await AnnouncementModel.find(filter).sort({publicationDate: -1});
+        const announcements = await AnnouncementModel.find(filter).sort({lastUpdate: -1});
         res.json(announcements);
     } catch (error) {
         res.status(500).json({message: 'Server error', error: error});
@@ -61,14 +61,14 @@ exports.listAnnouncements = async (req, res) => {
 
 // GET /api/announcement/get/:id
 exports.getAnnouncement = async (req, res) => {
-    const announcement = await getAnnouncementObject(req, res);
+    const announcement = await getAnnouncementObject(req.params.id, res);
 
     res.json(announcement);
 };
 
 // UPDATE /api/announcement/update
 exports.updateAnnouncement = async (req, res) => {
-    const announcement = await getAnnouncementObject(req, res);
+    const announcement = await getAnnouncementObject(req.body.id, res);
 
     const updateObject = {
         title: req.body.title ?? announcement.title,
@@ -93,7 +93,7 @@ exports.updateAnnouncement = async (req, res) => {
 
 // DELETE /api/announcement/delete
 exports.deleteAnnouncement = async (req, res) => {
-    await getAnnouncementObject(req, res);
+    await getAnnouncementObject(req.params.id, res);
 
     try {
         await AnnouncementModel.findByIdAndDelete(req.body.id);
