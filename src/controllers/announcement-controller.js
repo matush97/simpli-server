@@ -1,4 +1,5 @@
 const AnnouncementModel = require('../models/announcement-model');
+const socket = require('../socket');
 
 async function getAnnouncementObject(id, res) {
     let announcement;
@@ -30,6 +31,9 @@ exports.createAnnouncement = async (req, res) => {
         });
 
         res.status(200).json(announcement);
+
+        const io = socket.getIO();
+        io.emit("announcement:new", { id: announcement.id, title: announcement.title });
     } catch (error) {
         res.status(400).json({message: 'Bad request', error: error});
     }
@@ -96,7 +100,7 @@ exports.deleteAnnouncement = async (req, res) => {
     await getAnnouncementObject(req.params.id, res);
 
     try {
-        await AnnouncementModel.findByIdAndDelete(req.body.id);
+        await AnnouncementModel.findByIdAndDelete(req.params.id);
         res.json({message: 'Deleted successfully'});
     } catch (error) {
         res.status(400).json({message: 'Delete failed'});
