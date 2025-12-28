@@ -17,7 +17,7 @@ async function getAnnouncementObject(id, res) {
 
 // POST /api/announcement/create
 exports.createAnnouncement = async (req, res) => {
-    const {title, content, category} = req.body;
+    const {title, content, category, publicationDate} = req.body;
     const actualDate = new Date();
 
     try {
@@ -25,7 +25,7 @@ exports.createAnnouncement = async (req, res) => {
             title,
             content,
             category,
-            publicationDate: actualDate,
+            publicationDate: publicationDate ?? actualDate,
             lastUpdate: actualDate
         });
 
